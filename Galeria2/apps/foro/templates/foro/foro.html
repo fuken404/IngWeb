@@ -1,0 +1,108 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Foro{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+    * {
+        font-family: "Montserrat", sans-serif;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        background-color: #fff;
+    }
+    .foro-container {
+        width: 80%;
+        margin: auto;
+        background: #f4f4f4;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .mensaje {
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .like-btn {
+        background: #CDE77F;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .like-btn:hover {
+        background: #709176;
+        color: white;
+    }
+    .mensaje{
+        width: 97%;
+    }
+    .crearMensaje{
+        background: #CDE77F;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .crearMensaje:hover{
+        
+        background-color: #709176;
+        color: white;
+
+    }
+</style>
+
+<div class="foro-container">
+    <h2>Foro</h2>
+    
+    <form action="{% url 'publicar_mensaje' %}" method="POST">
+        {% csrf_token %}
+        <textarea name="contenido" rows="3" required placeholder="Escribe tu mensaje aquí..." class="mensaje"></textarea><br>
+        <button type="submit" class="crearMensaje"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
+          </svg></button>
+    </form>
+    
+    <hr>
+    
+    <h3>Conversación</h3>
+    {% for mensaje in mensajes %}
+        <div class="mensaje">
+            <p><strong>{{ mensaje.username }}</strong>: {{ mensaje.contenido }}</p>
+            <button class="like-btn" onclick="darLike({{ mensaje.id }})">👍 {{ mensaje.likes }}</button>
+        </div>
+    {% empty %}
+        <p>No hay mensajes aún. ¡Sé el primero en participar!</p>
+    {% endfor %}
+</div>
+
+<script>
+    // Obtener el token CSRF de la página
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    function darLike(mensajeId) {
+        fetch(`/foro/like/${mensajeId}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),
+                "Content-Type": "application/json"
+            },
+            credentials: "same-origin"  // Asegura que las cookies se envíen correctamente
+        })
+        .then(response => response.json())
+        .then(data => {
+            location.reload();  // Recargar la página para reflejar el cambio
+        })
+        .catch(error => console.error("Error al dar like:", error));
+    }
+</script>
+
+{% endblock %}
