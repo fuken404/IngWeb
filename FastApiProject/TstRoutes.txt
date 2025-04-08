@@ -1,0 +1,23 @@
+*CRUD MONGO*
+POST -> http://127.0.0.1:8000/items
+{
+  "name": "Taladro",
+  "description": "Taladro eléctrico de 500W",
+  "price": 120.5
+}
+
+GET GENERAL -> http://127.0.0.1:8000/items
+
+GET ESPECÍFICO -> http://127.0.0.1:8000/items/{id_item_creado}
+
+PUT -> http://127.0.0.1:8000/items/{id_item_creado}
+{
+  "name": "Taladro actualizado",
+  "description": "Taladro inalámbrico de 18V",
+  "price": 199.99
+}
+
+DELETE -> http://127.0.0.1:8000/items/{id_item_creado}
+
+*CONVERSOR DE DIVISAS*
+GET -> http://127.0.0.1:8000/currency/convert?from_currency={moneda_salida}&to_currency={moneda_llegada}&amount={cantidad}
